@@ -1,0 +1,154 @@
+<!DOCTYPE html> 
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Code QR</title>
+    <!-- Lien vers le fichier CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Librairie pour générer les QR Codes -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1> Générateur de QR Code</h1>
+        <p>Choisissez une option pour créer votre code QR</p>
+    </header>
+
+    <main>
+        <!-- Sélecteur d'option -->
+        <div class="options">
+            <button id="freeBtn" class="active">CodeQR Simple</button>
+            <button id="paidBtn">💎 CodeQR Premium</button>
+        </div>
+
+        <!-- Formulaire Gratuit -->
+        <div id="freeForm" class="form active">
+            <label for="freeUrl">Lien ou texte :</label>
+            <input type="text" id="freeUrl" placeholder="https://exemple.com">
+
+            <label for="freeSize">Taille :</label>
+            <select id="freeSize">
+                <option value="200">200x200</option>
+                <option value="300" selected>300x300</option>
+                <option value="400">400x400</option>
+            </select>
+
+            <label for="freeColor">Couleur du QR :</label>
+            <span class="color-control">
+                <input id="freeColor" type="color" value="#000000">
+            </span>
+
+            <button id="generateFree">Générer</button>
+            </div>
+            <div id="paidForm" class="form">
+                <label for="paidUrl">Lien ou texte :</label>
+                <input type="text" id="paidUrl" placeholder="https://exemple.com">
+
+                <label for="paidSize">Taille :</label>
+                <select id="paidSize">
+                    <option value="300">300x300</option>
+                    <option value="400" selected>400x400</option>
+                    <option value="500">500x500</option>
+                </select>
+
+                <label for="paidColor">Couleur du QR :</label>
+                <span class="color-control">
+                    <input id="paidColor" type="color" value="#000000">
+                </span>
+
+                <label style="margin-top:10px">Contenu intérieur</label>
+                <div class="overlay-choices">
+                    <label><input type="radio" name="paidOverlayType" value="image" checked> Image</label>
+                    <label><input type="radio" name="paidOverlayType" value="text"> Texte</label>
+                </div>
+
+                <div id="paidOverlayImageField">
+                    <label for="paidOverlayImageInput">Choisir une image :</label>
+                    <input type="file" id="paidOverlayImageInput" accept="image/*">
+                </div>
+
+                <div id="paidOverlayTextField" style="display:none">
+                    <label for="paidOverlayText">Texte :</label>
+                    <div class="input-with-counter">
+                        <input id="paidOverlayText" type="text" maxlength="10" placeholder="Ex: Promo">
+                        <span id="paidOverlayTextCounter" class="char-counter">0/10</span>
+                    </div>
+                </div>
+
+                <button id="generatePaid">Générer</button>
+            </div>
+
+        <!-- Zone d'affichage du QR Code -->
+        <div id="qrContainer">
+            <div id="qrLinkDisplay" style="display:none; margin-bottom: 15px; text-align: left;">
+                <label for="qrLinkField" style="display: block; margin-bottom: 5px; font-weight: bold;">Lien ou texte :</label>
+                <input type="text" id="qrLinkField" readonly style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f8f9fa;">
+            </div>
+            <div id="qrBox" class="qr-box">
+                <canvas id="qrCanvas"></canvas>
+            </div>
+
+            <div id="qrCaption" class="qr-caption"></div>
+
+            <div id="postActions" class="post-actions">
+                <button id="downloadBtn" style="display:none">Télécharger le QR</button>
+                <button id="payBtn" style="display:none">Payer pour débloquer</button>
+            </div>
+
+            <!-- Panel de paiement (hidden until pay clicked) -->
+            <div id="paymentPanel" class="payment-panel" style="display:none">
+                <h3>Paiement — générer code marchand</h3>
+                <label>Opérateur</label>
+                <div class="operators">
+                    <label><input type="radio" name="operator" value="Wave" checked> <img src="wave.png" alt="Wave" class="operator-logo"> wave</label>
+                    <label><input type="radio" name="operator" value="OrangeMoney"> <img src="OrangeMoney.png" alt="Orange" class="operator-logo"> orangemoney</label>
+                    <label><input type="radio" name="operator" value="FreeMoney"> <img src="freeMoney.png" alt="Free" class="operator-logo"> free</label>
+                </div>
+
+                <div id="payAmountDisplay">500 FCFA</div>
+
+                <label>Numero</label>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="flex-shrink: 0; padding: 8px 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 6px; font-weight: bold;">+221</div>
+                    <input id="payPhone" type="text" placeholder="771234567" inputmode="numeric" pattern="[0-9]*" maxlength="9" style="flex: 1;">
+                </div>
+
+                <div id="payQrColorWrap" style="display:none">
+                    <label for="payQrColor">Couleur du QR</label>
+                    <span class="color-control">
+                        <input id="payQrColor" type="color" value="#000000">
+                    </span>
+                </div>
+
+                <div class="actions" style="margin-top:10px; display: flex; justify-content: center; gap: 8px;">
+                    <button id="genMerchantCode">Payer</button>
+                    <button id="cancelPayment" class="ghost">Annuler</button>
+                </div>
+
+                <div id="merchantQrPreview" class="merchant-qr-preview" style="display:none;">
+                    <div id="merchantQrContainer" style="margin-top: 20px;">
+                        <!-- Le code QR marchand de l'opérateur sélectionné sera généré ici -->
+                    </div>
+                </div>
+                
+                <div id="paymentConfirmation" style="display:none; text-align: center; padding: 20px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; margin-top: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                    <h3 style="color: #4caf50; margin: 10px 0;">Paiement confirmé !</h3>
+                    <p id="paymentInfo" style="margin: 10px 0; color: #333;"></p>
+                </div>
+
+                <div style="margin-top:10px; display:flex; gap:8px; justify-content:center">
+                    <button id="confirmPayment" style="display:none">J'ai reçu le paiement</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Lien vers le script JavaScript -->
+    <script src="script.clean.js"></script>
+</body>
+
+</html>
