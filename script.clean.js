@@ -77,7 +77,7 @@ if(generateFree) generateFree.addEventListener('click', async ()=>{
     canvas.width = size; canvas.height = size;
     const color = getColor('freeColor');
     await QRCode.toCanvas(canvas, text, { width: size, color: { dark: color, light: '#fff' }, margin:1 });
-    drawCenterText(canvas,'GalsenQR',color);
+    drawCenterText(canvas,'',color);
     lastGenerated = { text, size, color, previewDataURL: canvas.toDataURL('image/png') };
     if(downloadButton) downloadButton.style.display = 'inline-block';
 });
